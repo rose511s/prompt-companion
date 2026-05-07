@@ -1,5 +1,4 @@
-What this is ?
-A curated library of gold-standard prompts for software development & DevOps tasks. Every prompt uses an established framework (CO-STAR, Few-Shot, Chain-of-Thought) and exposes its inputs as [BRACKETED_VARIABLES].
+
 
 # 📚 Prompt Directory — DevOps Edition
 
@@ -78,10 +77,28 @@ This repository acts as a **toolkit for engineers**, offering reusable prompts t
    cd prompt-essence-base
 
 3. Explore the prompt categories in /library
+.
+.
+.
+.
+.
+.
+.
+.
+https://prompt-companion-app.lovable.app
 
 
-
-
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
+.
 
 
 
