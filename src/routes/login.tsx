@@ -43,6 +43,7 @@ function LoginPage() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
+      navigate({ to: "/library" });
     } catch (e: any) {
       toast.error(e.message || "Authentication failed");
     } finally {
