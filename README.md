@@ -1,11 +1,13 @@
 
-<img width="1915" height="848" alt="Screenshot 2026-05-07 192517" src="https://github.com/user-attachments/assets/d072d8cd-57df-43c0-b207-83ee0e083e7c" />
+<img width="1918" height="838" alt="Screenshot 2026-05-19 162749" src="https://github.com/user-attachments/assets/96f06662-c0ed-4b16-a243-17f30ca5a446" />
+
 .
 .
 .
 .
 
-<img width="1893" height="862" alt="Screenshot 2026-05-07 193818" src="https://github.com/user-attachments/assets/eba33731-421b-4c09-b90f-2e437fa69933" />
+<img width="1919" height="854" alt="Screenshot 2026-05-19 162805" src="https://github.com/user-attachments/assets/b6f221d1-a2b8-40f8-8624-5177e202c159" />
+
 
 # 📚 Prompt Directory — DevOps Edition
 
