@@ -84,6 +84,8 @@
     -webkit-font-smoothing: antialiased;
   }
   .font-mono { font-family: var(--font-mono); }
+  .font-display { font-family: var(--font-display); }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.02em; }
 }
 
 @layer utilities {
