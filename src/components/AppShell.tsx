@@ -4,6 +4,8 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { HelpChat } from "@/components/HelpChat";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const nav = [
   { to: "/library", label: "Library", icon: Library },
