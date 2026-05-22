@@ -4,6 +4,8 @@ import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
+import { HelpChat } from "@/components/HelpChat";
+import { ThemeToggle } from "@/components/ThemeToggle";
 
 const nav = [
   { to: "/library", label: "Library", icon: Library },
@@ -63,6 +65,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </div>
               <Badge variant="secondary" className="text-[10px] h-4 px-1.5">{role}</Badge>
             </div>
+            <ThemeToggle />
             <Button variant="ghost" size="icon" onClick={async () => { await signOut(); navigate({ to: "/login" }); }}>
               <LogOut className="size-4" />
             </Button>
@@ -71,6 +74,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </aside>
 
       <main className="flex-1 min-w-0 overflow-auto">{children}</main>
+      <HelpChat />
     </div>
   );
 }
