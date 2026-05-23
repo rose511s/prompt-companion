@@ -21,7 +21,7 @@ export const logEvent = createServerFn({ method: "POST" })
       action: data.action,
       entity_type: data.entity_type,
       entity_id: data.entity_id ?? null,
-      metadata: data.metadata ?? {},
+      metadata: (data.metadata ?? {}) as never,
     });
     if (error) {
       console.error("audit log insert failed", error);
