@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Library, Star, Plus, BookOpen, LogOut, Sparkles } from "lucide-react";
+import { Library, Star, Plus, BookOpen, LogOut, Sparkles, Shield } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,7 +12,7 @@ const nav = [
   { to: "/favorites", label: "Favorites", icon: Star },
   { to: "/new", label: "New Prompt", icon: Plus },
   { to: "/readme", label: "README", icon: BookOpen },
-];
+] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const { user, profile, role, signOut } = useAuth();
@@ -50,6 +50,19 @@ export function AppShell({ children }: { children: React.ReactNode }) {
               </Link>
             );
           })}
+          {role === "admin" && (
+            <Link
+              to="/admin"
+              className={`flex items-center gap-3 px-3 py-2 rounded-md text-sm font-medium transition-colors ${
+                path.startsWith("/admin")
+                  ? "bg-accent text-accent-foreground"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted"
+              }`}
+            >
+              <Shield className="size-4" />
+              Admin
+            </Link>
+          )}
         </nav>
 
         <div className="p-3 border-t border-border">
