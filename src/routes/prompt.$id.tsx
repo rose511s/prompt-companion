@@ -97,14 +97,22 @@ function DetailPage() {
           {prompt.description && <p className="text-muted-foreground mt-2">{prompt.description}</p>}
           <p className="text-xs text-muted-foreground mt-3">By {author}</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button variant="outline" size="icon" onClick={toggleFav}>
             <Star className={`size-4 ${favorite ? "fill-primary text-primary" : ""}`} />
           </Button>
+          <Link to="/prompt/$id/history" params={{ id: prompt.id }}>
+            <Button variant="outline" size="sm">History</Button>
+          </Link>
           {isOwner && (
-            <Button variant="outline" size="icon" onClick={del}>
-              <Trash2 className="size-4" />
-            </Button>
+            <>
+              <Link to="/prompt/$id/edit" params={{ id: prompt.id }}>
+                <Button variant="outline" size="sm">Edit</Button>
+              </Link>
+              <Button variant="outline" size="icon" onClick={del}>
+                <Trash2 className="size-4" />
+              </Button>
+            </>
           )}
         </div>
       </header>

@@ -11,6 +11,7 @@ export function fillPlaceholders(content: string, values: Record<string, string>
 }
 
 export const CATEGORIES = [
+  "Beginner",
   "Development",
   "Code Review",
   "Debugging",

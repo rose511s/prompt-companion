@@ -14,6 +14,60 @@ export type Database = {
   }
   public: {
     Tables: {
+      audit_logs: {
+        Row: {
+          action: string
+          actor_id: string | null
+          created_at: string
+          entity_id: string | null
+          entity_type: string
+          id: string
+          metadata: Json
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type: string
+          id?: string
+          metadata?: Json
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string
+          id?: string
+          metadata?: Json
+        }
+        Relationships: []
+      }
+      chat_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       favorites: {
         Row: {
           created_at: string
@@ -63,6 +117,62 @@ export type Database = {
           id?: string
         }
         Relationships: []
+      }
+      prompt_versions: {
+        Row: {
+          category: string
+          change_note: string | null
+          content: string
+          description: string | null
+          edited_at: string
+          edited_by: string
+          framework: string | null
+          id: string
+          is_public: boolean
+          prompt_id: string
+          tags: string[]
+          title: string
+          version_number: number
+        }
+        Insert: {
+          category: string
+          change_note?: string | null
+          content: string
+          description?: string | null
+          edited_at?: string
+          edited_by: string
+          framework?: string | null
+          id?: string
+          is_public?: boolean
+          prompt_id: string
+          tags?: string[]
+          title: string
+          version_number: number
+        }
+        Update: {
+          category?: string
+          change_note?: string | null
+          content?: string
+          description?: string | null
+          edited_at?: string
+          edited_by?: string
+          framework?: string | null
+          id?: string
+          is_public?: boolean
+          prompt_id?: string
+          tags?: string[]
+          title?: string
+          version_number?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "prompt_versions_prompt_id_fkey"
+            columns: ["prompt_id"]
+            isOneToOne: false
+            referencedRelation: "prompts"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       prompts: {
         Row: {
@@ -136,9 +246,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      log_audit_event: {
+        Args: {
+          _action: string
+          _entity_id: string
+          _entity_type: string
+          _metadata?: Json
+        }
+        Returns: string
+      }
     }
     Enums: {
-      app_role: "admin" | "member"
+      app_role: "admin" | "member" | "editor"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -266,7 +385,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
-      app_role: ["admin", "member"],
+      app_role: ["admin", "member", "editor"],
     },
   },
 } as const

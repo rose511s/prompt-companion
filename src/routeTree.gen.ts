@@ -14,8 +14,12 @@ import { Route as NewRouteImport } from './routes/new'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as FavoritesRouteImport } from './routes/favorites'
+import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PromptIdRouteImport } from './routes/prompt.$id'
+import { Route as AdminAuditRouteImport } from './routes/admin.audit'
+import { Route as PromptIdHistoryRouteImport } from './routes/prompt.$id.history'
+import { Route as PromptIdEditRouteImport } from './routes/prompt.$id.edit'
 
 const ReadmeRoute = ReadmeRouteImport.update({
   id: '/readme',
@@ -42,6 +46,11 @@ const FavoritesRoute = FavoritesRouteImport.update({
   path: '/favorites',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -52,73 +61,113 @@ const PromptIdRoute = PromptIdRouteImport.update({
   path: '/prompt/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminAuditRoute = AdminAuditRouteImport.update({
+  id: '/audit',
+  path: '/audit',
+  getParentRoute: () => AdminRoute,
+} as any)
+const PromptIdHistoryRoute = PromptIdHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => PromptIdRoute,
+} as any)
+const PromptIdEditRoute = PromptIdEditRouteImport.update({
+  id: '/edit',
+  path: '/edit',
+  getParentRoute: () => PromptIdRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
-  '/prompt/$id': typeof PromptIdRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/prompt/$id/edit': typeof PromptIdEditRoute
+  '/prompt/$id/history': typeof PromptIdHistoryRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
-  '/prompt/$id': typeof PromptIdRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/prompt/$id/edit': typeof PromptIdEditRoute
+  '/prompt/$id/history': typeof PromptIdHistoryRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/admin': typeof AdminRouteWithChildren
   '/favorites': typeof FavoritesRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
-  '/prompt/$id': typeof PromptIdRoute
+  '/admin/audit': typeof AdminAuditRoute
+  '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/prompt/$id/edit': typeof PromptIdEditRoute
+  '/prompt/$id/history': typeof PromptIdHistoryRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/admin'
     | '/favorites'
     | '/library'
     | '/login'
     | '/new'
     | '/readme'
+    | '/admin/audit'
     | '/prompt/$id'
+    | '/prompt/$id/edit'
+    | '/prompt/$id/history'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/admin'
     | '/favorites'
     | '/library'
     | '/login'
     | '/new'
     | '/readme'
+    | '/admin/audit'
     | '/prompt/$id'
+    | '/prompt/$id/edit'
+    | '/prompt/$id/history'
   id:
     | '__root__'
     | '/'
+    | '/admin'
     | '/favorites'
     | '/library'
     | '/login'
     | '/new'
     | '/readme'
+    | '/admin/audit'
     | '/prompt/$id'
+    | '/prompt/$id/edit'
+    | '/prompt/$id/history'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AdminRoute: typeof AdminRouteWithChildren
   FavoritesRoute: typeof FavoritesRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
   NewRoute: typeof NewRoute
   ReadmeRoute: typeof ReadmeRoute
-  PromptIdRoute: typeof PromptIdRoute
+  PromptIdRoute: typeof PromptIdRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -158,6 +207,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof FavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -172,28 +228,64 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromptIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/audit': {
+      id: '/admin/audit'
+      path: '/audit'
+      fullPath: '/admin/audit'
+      preLoaderRoute: typeof AdminAuditRouteImport
+      parentRoute: typeof AdminRoute
+    }
+    '/prompt/$id/history': {
+      id: '/prompt/$id/history'
+      path: '/history'
+      fullPath: '/prompt/$id/history'
+      preLoaderRoute: typeof PromptIdHistoryRouteImport
+      parentRoute: typeof PromptIdRoute
+    }
+    '/prompt/$id/edit': {
+      id: '/prompt/$id/edit'
+      path: '/edit'
+      fullPath: '/prompt/$id/edit'
+      preLoaderRoute: typeof PromptIdEditRouteImport
+      parentRoute: typeof PromptIdRoute
+    }
   }
 }
 
+interface AdminRouteChildren {
+  AdminAuditRoute: typeof AdminAuditRoute
+}
+
+const AdminRouteChildren: AdminRouteChildren = {
+  AdminAuditRoute: AdminAuditRoute,
+}
+
+const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface PromptIdRouteChildren {
+  PromptIdEditRoute: typeof PromptIdEditRoute
+  PromptIdHistoryRoute: typeof PromptIdHistoryRoute
+}
+
+const PromptIdRouteChildren: PromptIdRouteChildren = {
+  PromptIdEditRoute: PromptIdEditRoute,
+  PromptIdHistoryRoute: PromptIdHistoryRoute,
+}
+
+const PromptIdRouteWithChildren = PromptIdRoute._addFileChildren(
+  PromptIdRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AdminRoute: AdminRouteWithChildren,
   FavoritesRoute: FavoritesRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
   NewRoute: NewRoute,
   ReadmeRoute: ReadmeRoute,
-  PromptIdRoute: PromptIdRoute,
+  PromptIdRoute: PromptIdRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

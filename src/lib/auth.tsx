@@ -8,7 +8,7 @@ type AuthCtx = {
   user: User | null;
   session: Session | null;
   profile: Profile | null;
-  role: "admin" | "member" | null;
+  role: "admin" | "editor" | "member" | null;
   loading: boolean;
   signOut: () => Promise<void>;
 };
@@ -19,7 +19,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
-  const [role, setRole] = useState<"admin" | "member" | null>(null);
+  const [role, setRole] = useState<"admin" | "editor" | "member" | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,7 +48,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       supabase.from("user_roles").select("role").eq("user_id", uid).maybeSingle(),
     ]);
     setProfile(p);
-    setRole((r?.role as "admin" | "member") ?? "member");
+    setRole((r?.role as "admin" | "editor" | "member") ?? "member");
   }
 
   return (
