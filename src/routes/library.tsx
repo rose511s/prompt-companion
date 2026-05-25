@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RequireAuth } from "@/components/RequireAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import type { Database } from "@/integrations/supabase/types";
 import { CATEGORIES } from "@/lib/prompt-utils";
 import { PromptCard } from "@/components/PromptCard";
+import { GridSkeleton, ErrorBlock } from "@/components/LoadingSkeleton";
 import { Plus, Search, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,31 +25,44 @@ export const Route = createFileRoute("/library")({
 
 function LibraryPage() {
   const { user } = useAuth();
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null);
   const [scope, setScope] = useState<"all" | "mine">("all");
 
-  useEffect(() => { void load(); }, [user]);
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["library", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const [{ data: p, error: pErr }, { data: f, error: fErr }] = await Promise.all([
+        supabase.from("prompts").select("*").order("updated_at", { ascending: false }),
+        supabase.from("favorites").select("prompt_id"),
+      ]);
+      if (pErr) throw new Error(pErr.message);
+      if (fErr) throw new Error(fErr.message);
+      return {
+        prompts: (p ?? []) as Prompt[],
+        favorites: new Set((f ?? []).map((x) => x.prompt_id)),
+      };
+    },
+  });
 
-  async function load() {
-    const { data: p } = await supabase.from("prompts").select("*").order("updated_at", { ascending: false });
-    const { data: f } = await supabase.from("favorites").select("prompt_id");
-    setPrompts(p ?? []);
-    setFavorites(new Set((f ?? []).map((x) => x.prompt_id)));
-  }
+  const prompts = data?.prompts ?? [];
+  const favorites = data?.favorites ?? new Set<string>();
 
   async function toggleFav(id: string) {
     if (!user) return;
-    if (favorites.has(id)) {
-      await supabase.from("favorites").delete().eq("user_id", user.id).eq("prompt_id", id);
-      const n = new Set(favorites); n.delete(id); setFavorites(n);
-    } else {
-      await supabase.from("favorites").insert({ user_id: user.id, prompt_id: id });
-      setFavorites(new Set([...favorites, id]));
-      toast.success("Added to favorites");
+    const isFav = favorites.has(id);
+    const { error: mErr } = isFav
+      ? await supabase.from("favorites").delete().eq("user_id", user.id).eq("prompt_id", id)
+      : await supabase.from("favorites").insert({ user_id: user.id, prompt_id: id });
+    if (mErr) {
+      toast.error(mErr.message);
+      return;
     }
+    if (!isFav) toast.success("Added to favorites");
+    qc.invalidateQueries({ queryKey: ["library", user.id] });
+    qc.invalidateQueries({ queryKey: ["favorites", user.id] });
   }
 
   const filtered = useMemo(() => {
