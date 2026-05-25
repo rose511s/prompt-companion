@@ -168,8 +168,31 @@ function LibraryPage() {
           ))}
         </div>
 
+        {/* Beginner onboarding banner */}
+        {!isLoading && !error && prompts.length > 0 && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4">
+            <div className="size-10 rounded-lg gradient-primary flex items-center justify-center shrink-0">
+              <Sparkles className="size-5 text-primary-foreground" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold">New here? Start with the Beginner set.</div>
+              <p className="text-sm text-muted-foreground">
+                Plain-language prompts for explaining code, writing a first test, debugging an error, and more.
+              </p>
+            </div>
+            <button
+              onClick={() => setCat("Beginner")}
+              className="px-4 py-2 rounded-md gradient-primary text-primary-foreground text-sm font-bold shadow-elegant whitespace-nowrap"
+            >
+              Show beginner prompts
+            </button>
+          </div>
+        )}
+
         {/* Editorial grid */}
-        {filtered.length === 0 ? (
+        {isLoading && <GridSkeleton count={6} />}
+        {error && <ErrorBlock error={error} onRetry={() => refetch()} />}
+        {!isLoading && !error && filtered.length === 0 ? (
           <div className="text-center py-24 border border-dashed border-border rounded-2xl">
             <Sparkles className="size-8 mx-auto text-primary mb-3" />
             <p className="text-muted-foreground">No prompts match. Start the collection.</p>
