@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Sparkles, ArrowRight, Shield, GitBranch, FileText } from "lucide-react";
+import { Sparkles, ArrowRight, Shield, GitBranch, FileText, BookOpen, Bug, FlaskConical, Wand2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +49,47 @@ function Home() {
           <Link to="/readme" className="px-6 py-3 rounded-lg border border-border hover:bg-muted font-bold">
             How it works
           </Link>
+        </div>
+      </section>
+
+      {/* Start here — beginner onboarding */}
+      <section className="border-t border-border">
+        <div className="max-w-6xl mx-auto px-6 py-20">
+          <div className="flex items-end justify-between gap-4 mb-10">
+            <div>
+              <span className="text-[10px] font-bold tracking-[0.2em] uppercase text-primary">Start here</span>
+              <h2 className="text-3xl md:text-4xl font-extrabold tracking-tight mt-2">
+                New to prompt engineering?
+              </h2>
+              <p className="text-muted-foreground mt-2 max-w-xl">
+                Four guided prompts that take a real beginner from "I'm stuck" to a useful output in a single try.
+              </p>
+            </div>
+            <Link
+              to="/library"
+              className="hidden md:inline-flex px-4 py-2 rounded-lg border border-border hover:bg-muted text-sm font-bold whitespace-nowrap"
+            >
+              Browse all →
+            </Link>
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+            {[
+              { icon: BookOpen, t: "Explain code like I'm new", d: "Paste a snippet, get a plain-English walkthrough." },
+              { icon: Bug, t: "Debug my error message", d: "Structured diagnosis of any confusing error." },
+              { icon: FlaskConical, t: "Write my first unit test", d: "Three solid tests — happy path, edge case, invalid input." },
+              { icon: Wand2, t: "Learn a new concept fast", d: "A 5-minute primer on any topic with examples." },
+            ].map((c) => (
+              <Link
+                key={c.t}
+                to="/library"
+                className="group bg-card border border-border rounded-2xl p-6 hover:border-primary transition-all hover:shadow-elegant"
+              >
+                <c.icon className="size-6 text-primary mb-4 group-hover:scale-110 transition-transform" />
+                <h3 className="font-bold leading-tight">{c.t}</h3>
+                <p className="text-muted-foreground text-sm mt-2">{c.d}</p>
+              </Link>
+            ))}
+          </div>
         </div>
       </section>
 

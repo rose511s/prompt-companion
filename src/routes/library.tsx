@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { RequireAuth } from "@/components/RequireAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import type { Database } from "@/integrations/supabase/types";
 import { CATEGORIES } from "@/lib/prompt-utils";
 import { PromptCard } from "@/components/PromptCard";
+import { GridSkeleton, ErrorBlock } from "@/components/LoadingSkeleton";
 import { Plus, Search, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
@@ -23,31 +25,44 @@ export const Route = createFileRoute("/library")({
 
 function LibraryPage() {
   const { user } = useAuth();
-  const [prompts, setPrompts] = useState<Prompt[]>([]);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+  const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null);
   const [scope, setScope] = useState<"all" | "mine">("all");
 
-  useEffect(() => { void load(); }, [user]);
+  const { data, isLoading, error, refetch } = useQuery({
+    queryKey: ["library", user?.id],
+    enabled: !!user,
+    queryFn: async () => {
+      const [{ data: p, error: pErr }, { data: f, error: fErr }] = await Promise.all([
+        supabase.from("prompts").select("*").order("updated_at", { ascending: false }),
+        supabase.from("favorites").select("prompt_id"),
+      ]);
+      if (pErr) throw new Error(pErr.message);
+      if (fErr) throw new Error(fErr.message);
+      return {
+        prompts: (p ?? []) as Prompt[],
+        favorites: new Set((f ?? []).map((x) => x.prompt_id)),
+      };
+    },
+  });
 
-  async function load() {
-    const { data: p } = await supabase.from("prompts").select("*").order("updated_at", { ascending: false });
-    const { data: f } = await supabase.from("favorites").select("prompt_id");
-    setPrompts(p ?? []);
-    setFavorites(new Set((f ?? []).map((x) => x.prompt_id)));
-  }
+  const prompts = data?.prompts ?? [];
+  const favorites = data?.favorites ?? new Set<string>();
 
   async function toggleFav(id: string) {
     if (!user) return;
-    if (favorites.has(id)) {
-      await supabase.from("favorites").delete().eq("user_id", user.id).eq("prompt_id", id);
-      const n = new Set(favorites); n.delete(id); setFavorites(n);
-    } else {
-      await supabase.from("favorites").insert({ user_id: user.id, prompt_id: id });
-      setFavorites(new Set([...favorites, id]));
-      toast.success("Added to favorites");
+    const isFav = favorites.has(id);
+    const { error: mErr } = isFav
+      ? await supabase.from("favorites").delete().eq("user_id", user.id).eq("prompt_id", id)
+      : await supabase.from("favorites").insert({ user_id: user.id, prompt_id: id });
+    if (mErr) {
+      toast.error(mErr.message);
+      return;
     }
+    if (!isFav) toast.success("Added to favorites");
+    qc.invalidateQueries({ queryKey: ["library", user.id] });
+    qc.invalidateQueries({ queryKey: ["favorites", user.id] });
   }
 
   const filtered = useMemo(() => {
@@ -153,8 +168,31 @@ function LibraryPage() {
           ))}
         </div>
 
+        {/* Beginner onboarding banner */}
+        {!isLoading && !error && prompts.length > 0 && (
+          <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4">
+            <div className="size-10 rounded-lg gradient-primary flex items-center justify-center shrink-0">
+              <Sparkles className="size-5 text-primary-foreground" />
+            </div>
+            <div className="flex-1">
+              <div className="font-bold">New here? Start with the Beginner set.</div>
+              <p className="text-sm text-muted-foreground">
+                Plain-language prompts for explaining code, writing a first test, debugging an error, and more.
+              </p>
+            </div>
+            <button
+              onClick={() => setCat("Beginner")}
+              className="px-4 py-2 rounded-md gradient-primary text-primary-foreground text-sm font-bold shadow-elegant whitespace-nowrap"
+            >
+              Show beginner prompts
+            </button>
+          </div>
+        )}
+
         {/* Editorial grid */}
-        {filtered.length === 0 ? (
+        {isLoading && <GridSkeleton count={6} />}
+        {error && <ErrorBlock error={error} onRetry={() => refetch()} />}
+        {!isLoading && !error && filtered.length === 0 && (
           <div className="text-center py-24 border border-dashed border-border rounded-2xl">
             <Sparkles className="size-8 mx-auto text-primary mb-3" />
             <p className="text-muted-foreground">No prompts match. Start the collection.</p>
@@ -165,7 +203,8 @@ function LibraryPage() {
               Create prompt
             </Link>
           </div>
-        ) : (
+        )}
+        {!isLoading && !error && filtered.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8">
             {/* Featured */}
             {featured && (
