@@ -192,7 +192,7 @@ function LibraryPage() {
         {/* Editorial grid */}
         {isLoading && <GridSkeleton count={6} />}
         {error && <ErrorBlock error={error} onRetry={() => refetch()} />}
-        {!isLoading && !error && filtered.length === 0 ? (
+        {!isLoading && !error && filtered.length === 0 && (
           <div className="text-center py-24 border border-dashed border-border rounded-2xl">
             <Sparkles className="size-8 mx-auto text-primary mb-3" />
             <p className="text-muted-foreground">No prompts match. Start the collection.</p>
@@ -203,7 +203,8 @@ function LibraryPage() {
               Create prompt
             </Link>
           </div>
-        ) : (
+        )}
+        {!isLoading && !error && filtered.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-6 md:gap-8">
             {/* Featured */}
             {featured && (
