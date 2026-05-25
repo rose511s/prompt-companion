@@ -1,8 +1,14 @@
 import { useState, useRef, useEffect } from "react";
 import { useServerFn } from "@tanstack/react-start";
-import { MessageCircle, X, Send, Sparkles, Loader2 } from "lucide-react";
+import { MessageCircle, X, Send, Sparkles, Loader2, Trash2 } from "lucide-react";
 import ReactMarkdown from "react-markdown";
 import { sendChat } from "@/lib/chat.functions";
+import {
+  loadChatHistory,
+  saveChatMessages,
+  clearChatHistory,
+} from "@/lib/chat-history.functions";
+import { useAuth } from "@/lib/auth";
 import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
@@ -15,21 +21,48 @@ const GREETING: Msg = {
 };
 
 export function HelpChat() {
+  const { user } = useAuth();
   const [open, setOpen] = useState(false);
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [hydrated, setHydrated] = useState(false);
   const send = useServerFn(sendChat);
+  const loadHistory = useServerFn(loadChatHistory);
+  const saveMsgs = useServerFn(saveChatMessages);
+  const clearHistory = useServerFn(clearChatHistory);
   const scrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
   }, [messages, open]);
 
+  // Load persisted history the first time the chat opens for a signed-in user.
+  useEffect(() => {
+    if (!open || !user || hydrated) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const res = await loadHistory();
+        if (cancelled) return;
+        const persisted = (res.messages ?? [])
+          .filter((m) => m.role === "user" || m.role === "assistant")
+          .map((m) => ({ role: m.role as "user" | "assistant", content: m.content }));
+        setMessages(persisted.length > 0 ? [GREETING, ...persisted] : [GREETING]);
+      } catch (e) {
+        console.error("chat history load failed", e);
+      } finally {
+        if (!cancelled) setHydrated(true);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [open, user, hydrated, loadHistory]);
+
   async function handleSend() {
     const text = input.trim();
     if (!text || loading) return;
-    const next = [...messages, { role: "user" as const, content: text }];
+    const userMsg: Msg = { role: "user", content: text };
+    const next = [...messages, userMsg];
     setMessages(next);
     setInput("");
     setLoading(true);
@@ -37,7 +70,12 @@ export function HelpChat() {
       const payload = next.filter((m) => m !== GREETING).slice(-20);
       const res = await send({ data: { messages: payload } });
       if (res.ok) {
-        setMessages((m) => [...m, { role: "assistant", content: res.reply || "..." }]);
+        const assistantMsg: Msg = { role: "assistant", content: res.reply || "..." };
+        setMessages((m) => [...m, assistantMsg]);
+        // Persist the exchange (user + assistant)
+        saveMsgs({ data: { messages: [userMsg, assistantMsg] } }).catch((e) => {
+          console.error("chat persist failed", e);
+        });
       } else {
         toast.error(res.error);
         setMessages((m) => [...m, { role: "assistant", content: `⚠️ ${res.error}` }]);
@@ -47,6 +85,17 @@ export function HelpChat() {
       toast.error("Failed to reach assistant");
     } finally {
       setLoading(false);
+    }
+  }
+
+  async function handleClear() {
+    if (loading) return;
+    try {
+      await clearHistory();
+      setMessages([GREETING]);
+      toast.success("Conversation cleared");
+    } catch (e) {
+      toast.error(e instanceof Error ? e.message : "Failed to clear");
     }
   }
 
@@ -73,11 +122,28 @@ export function HelpChat() {
             </div>
             <div className="flex-1 min-w-0">
               <div className="font-semibold text-sm">Prompt Assistant</div>
-              <div className="text-xs text-muted-foreground">Ask anything about the app</div>
+              <div className="text-xs text-muted-foreground">
+                {user ? "Conversation saved across sessions" : "Sign in to save conversation"}
+              </div>
             </div>
+            {user && messages.length > 1 && (
+              <button
+                onClick={handleClear}
+                className="text-muted-foreground hover:text-destructive transition-colors p-1.5 rounded-md hover:bg-muted"
+                aria-label="Clear conversation"
+                title="Clear conversation"
+              >
+                <Trash2 className="size-4" />
+              </button>
+            )}
           </header>
 
           <div ref={scrollRef} className="flex-1 overflow-y-auto p-4 space-y-4">
+            {user && !hydrated && (
+              <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                <Loader2 className="size-3 animate-spin" /> Loading conversation…
+              </div>
+            )}
             {messages.map((m, i) => (
               <div
                 key={i}
