@@ -3,24 +3,52 @@ import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 
+// Allowlist of action values that clients are permitted to record. Privileged
+// actions (role.change, prompt.restore, admin.*) are written only from
+// server-side admin/versions flows and must NOT be accepted here.
+const CLIENT_ACTIONS = [
+  "prompt.create",
+  "prompt.update",
+  "prompt.delete",
+  "prompt.favorite",
+  "prompt.unfavorite",
+] as const;
+
+const ENTITY_TYPES = ["prompt"] as const;
+
 export const logEvent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) =>
     z
       .object({
-        action: z.string().min(1).max(64),
-        entity_type: z.string().min(1).max(64),
-        entity_id: z.string().uuid().optional(),
+        action: z.enum(CLIENT_ACTIONS),
+        entity_type: z.enum(ENTITY_TYPES),
+        entity_id: z.string().uuid(),
         metadata: z.record(z.string(), z.unknown()).optional(),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
+    // Verify the caller actually owns the entity they're claiming to act on.
+    // This prevents authenticated users from polluting the audit log with
+    // fabricated entries about other users' resources.
+    if (data.entity_type === "prompt") {
+      const { data: row, error } = await supabaseAdmin
+        .from("prompts")
+        .select("user_id")
+        .eq("id", data.entity_id)
+        .maybeSingle();
+      if (error) throw new Error(error.message);
+      if (!row || row.user_id !== context.userId) {
+        throw new Error("Forbidden: cannot log event for this entity");
+      }
+    }
+
     const { error } = await supabaseAdmin.from("audit_logs").insert({
       actor_id: context.userId,
       action: data.action,
       entity_type: data.entity_type,
-      entity_id: data.entity_id ?? null,
+      entity_id: data.entity_id,
       metadata: (data.metadata ?? {}) as never,
     });
     if (error) {
@@ -53,7 +81,6 @@ export const listAuditLogs = createServerFn({ method: "GET" })
       .limit(data.limit);
     if (error) throw new Error(error.message);
 
-    // Enrich with actor display names
     const actorIds = Array.from(
       new Set((rows ?? []).map((r) => r.actor_id).filter(Boolean) as string[]),
     );
