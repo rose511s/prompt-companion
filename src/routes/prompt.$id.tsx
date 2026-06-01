@@ -58,8 +58,10 @@ function DetailPage() {
     if (!user || !prompt) return;
     if (favorite) {
       await supabase.from("favorites").delete().eq("user_id", user.id).eq("prompt_id", prompt.id);
+      track("prompt.unfavorite", { entity_type: "prompt", entity_id: prompt.id });
     } else {
       await supabase.from("favorites").insert({ user_id: user.id, prompt_id: prompt.id });
+      track("prompt.favorite", { entity_type: "prompt", entity_id: prompt.id });
     }
     setFavorite(!favorite);
   }
