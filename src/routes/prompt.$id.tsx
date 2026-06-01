@@ -89,8 +89,11 @@ function DetailPage() {
 
       <header className="flex items-start justify-between gap-4 mb-6 flex-wrap">
         <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2 text-xs mb-2">
+          <div className="flex items-center gap-2 text-xs mb-2 flex-wrap">
             <Badge>{prompt.category}</Badge>
+            <Badge variant="secondary">
+              {prompt.difficulty === "Beginner" ? "🟢" : prompt.difficulty === "Advanced" ? "🔴" : "🟡"} {prompt.difficulty}
+            </Badge>
             {prompt.framework && <Badge variant="outline">{prompt.framework}</Badge>}
             <span className="text-muted-foreground flex items-center gap-1">
               {prompt.is_public ? <><Globe className="size-3" /> Team-visible</> : <><Lock className="size-3" /> Private</>}
