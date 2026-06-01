@@ -52,7 +52,9 @@ export const restorePromptVersion = createServerFn({ method: "POST" })
     if (pErr) throw new Error(pErr.message);
     if (!prompt) throw new Error("Prompt not found");
     const canEdit =
-      prompt.user_id === context.userId || !!isEditor || !!isAdmin;
+      prompt.user_id === context.userId ||
+      !!isAdmin ||
+      (!!isEditor && prompt.is_public === true);
     if (!canEdit) throw new Error("Forbidden");
 
     const { data: version, error: vErr } = await supabaseAdmin
