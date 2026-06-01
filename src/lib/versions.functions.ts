@@ -37,7 +37,7 @@ export const restorePromptVersion = createServerFn({ method: "POST" })
       await Promise.all([
         supabaseAdmin
           .from("prompts")
-          .select("id, user_id")
+          .select("id, user_id, is_public")
           .eq("id", data.prompt_id)
           .maybeSingle(),
         supabaseAdmin.rpc("has_role", {
