@@ -72,6 +72,7 @@ function LibraryPage() {
     return prompts.filter((p) => {
       if (scope === "mine" && p.user_id !== user?.id) return false;
       if (cat && p.category !== cat) return false;
+      if (difficulty && p.difficulty !== difficulty) return false;
       if (q) {
         const s = q.toLowerCase();
         return p.title.toLowerCase().includes(s)
@@ -80,7 +81,7 @@ function LibraryPage() {
       }
       return true;
     });
-  }, [prompts, q, cat, scope, user]);
+  }, [prompts, q, cat, difficulty, scope, user]);
 
   const [featured, ...rest] = filtered;
 
