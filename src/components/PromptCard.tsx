@@ -22,9 +22,15 @@ export function PromptCard({
       </button>
 
       <Link to="/prompt/$id" params={{ id: prompt.id }} className="flex flex-col gap-4 flex-1">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 flex-wrap">
           <span className="text-muted-foreground text-[10px] font-extrabold uppercase tracking-widest bg-background/40 border border-border px-2.5 py-1 rounded">
             {prompt.category}
+          </span>
+          <span
+            className="text-[10px] font-bold uppercase tracking-wider px-2 py-0.5 rounded border border-border"
+            title={`${prompt.difficulty} level`}
+          >
+            {prompt.difficulty === "Beginner" ? "🟢" : prompt.difficulty === "Advanced" ? "🔴" : "🟡"} {prompt.difficulty}
           </span>
           {prompt.framework && (
             <span className="text-primary/80 text-[10px] font-bold uppercase tracking-wider">
