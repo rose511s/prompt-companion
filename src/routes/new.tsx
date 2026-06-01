@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { logEvent } from "@/lib/audit.functions";
+import { track } from "@/lib/analytics";
 import { PromptEditor } from "@/components/PromptEditor";
 import { toast } from "sonner";
 
@@ -41,6 +42,7 @@ function NewPage() {
               metadata: { title: v.title, category: v.category },
             },
           }).catch(() => {});
+          track("prompt.create", { entity_type: "prompt", entity_id: data.id, metadata: { category: v.category, difficulty: v.difficulty } });
           toast.success("Prompt saved");
           nav({ to: "/prompt/$id", params: { id: data.id } });
         }}

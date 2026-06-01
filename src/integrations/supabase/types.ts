@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      analytics_events: {
+        Row: {
+          created_at: string
+          entity_id: string | null
+          entity_type: string | null
+          event_name: string
+          id: string
+          metadata: Json
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name: string
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          entity_id?: string | null
+          entity_type?: string | null
+          event_name?: string
+          id?: string
+          metadata?: Json
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       audit_logs: {
         Row: {
           action: string
@@ -180,39 +210,51 @@ export type Database = {
           content: string
           created_at: string
           description: string | null
+          difficulty: string
           framework: string | null
           id: string
           is_public: boolean
+          sample_input: string | null
+          sample_output: string | null
           tags: string[]
           title: string
           updated_at: string
           user_id: string
+          why_it_works: string | null
         }
         Insert: {
           category: string
           content: string
           created_at?: string
           description?: string | null
+          difficulty?: string
           framework?: string | null
           id?: string
           is_public?: boolean
+          sample_input?: string | null
+          sample_output?: string | null
           tags?: string[]
           title: string
           updated_at?: string
           user_id: string
+          why_it_works?: string | null
         }
         Update: {
           category?: string
           content?: string
           created_at?: string
           description?: string | null
+          difficulty?: string
           framework?: string | null
           id?: string
           is_public?: boolean
+          sample_input?: string | null
+          sample_output?: string | null
           tags?: string[]
           title?: string
           updated_at?: string
           user_id?: string
+          why_it_works?: string | null
         }
         Relationships: []
       }

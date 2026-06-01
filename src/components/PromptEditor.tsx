@@ -68,6 +68,10 @@ export type PromptValues = {
   framework: string | null;
   tags: string[];
   is_public: boolean;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  sample_input: string | null;
+  sample_output: string | null;
+  why_it_works: string | null;
 };
 
 export function PromptEditor({
@@ -86,6 +90,10 @@ export function PromptEditor({
   const [framework, setFramework] = useState(initial?.framework ?? FRAMEWORKS[0]);
   const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
   const [isPublic, setIsPublic] = useState(initial?.is_public ?? true);
+  const [difficulty, setDifficulty] = useState<PromptValues["difficulty"]>(initial?.difficulty ?? "Intermediate");
+  const [sampleInput, setSampleInput] = useState(initial?.sample_input ?? "");
+  const [sampleOutput, setSampleOutput] = useState(initial?.sample_output ?? "");
+  const [whyItWorks, setWhyItWorks] = useState(initial?.why_it_works ?? "");
   const [busy, setBusy] = useState(false);
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
 
@@ -125,6 +133,10 @@ export function PromptEditor({
         framework,
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
         is_public: isPublic,
+        difficulty,
+        sample_input: sampleInput.trim() || null,
+        sample_output: sampleOutput.trim() || null,
+        why_it_works: whyItWorks.trim() || null,
       });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Save failed");
@@ -160,9 +172,22 @@ export function PromptEditor({
             </Select>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="tags">Tags (comma-separated)</Label>
-          <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="kubernetes, debugging" />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Difficulty</Label>
+            <Select value={difficulty} onValueChange={(v) => setDifficulty(v as PromptValues["difficulty"])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Beginner">🟢 Beginner</SelectItem>
+                <SelectItem value="Intermediate">🟡 Intermediate</SelectItem>
+                <SelectItem value="Advanced">🔴 Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="kubernetes, debugging" />
+          </div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2 flex-wrap">
@@ -189,6 +214,37 @@ export function PromptEditor({
             {placeholders.length > 0 && (
               <span>{placeholders.length} variable{placeholders.length === 1 ? "" : "s"}</span>
             )}
+          </div>
+        </div>
+
+        <div className="space-y-4 border-t border-border pt-5">
+          <div>
+            <h3 className="text-sm font-semibold">Worked example <span className="text-muted-foreground font-normal">(optional, recommended)</span></h3>
+            <p className="text-xs text-muted-foreground">Help users understand the prompt by showing a realistic input + output.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sample_input">Sample input</Label>
+            <Textarea
+              id="sample_input" value={sampleInput} onChange={(e) => setSampleInput(e.target.value)}
+              placeholder="Example values filled into the variables…"
+              className="font-mono text-xs min-h-24"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sample_output">Expected output</Label>
+            <Textarea
+              id="sample_output" value={sampleOutput} onChange={(e) => setSampleOutput(e.target.value)}
+              placeholder="What a good AI response looks like…"
+              className="font-mono text-xs min-h-24"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="why">Why this works</Label>
+            <Textarea
+              id="why" value={whyItWorks} onChange={(e) => setWhyItWorks(e.target.value)}
+              placeholder="1–2 sentences on the framework choice and what makes this prompt effective."
+              className="text-sm min-h-20"
+            />
           </div>
         </div>
 

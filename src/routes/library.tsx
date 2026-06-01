@@ -12,6 +12,8 @@ import { Plus, Search, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 type Prompt = Database["public"]["Tables"]["prompts"]["Row"];
+type Difficulty = "Beginner" | "Intermediate" | "Advanced";
+const DIFFICULTIES: Difficulty[] = ["Beginner", "Intermediate", "Advanced"];
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -28,6 +30,7 @@ function LibraryPage() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [scope, setScope] = useState<"all" | "mine">("all");
 
   const { data, isLoading, error, refetch } = useQuery({
@@ -69,6 +72,7 @@ function LibraryPage() {
     return prompts.filter((p) => {
       if (scope === "mine" && p.user_id !== user?.id) return false;
       if (cat && p.category !== cat) return false;
+      if (difficulty && p.difficulty !== difficulty) return false;
       if (q) {
         const s = q.toLowerCase();
         return p.title.toLowerCase().includes(s)
@@ -77,7 +81,7 @@ function LibraryPage() {
       }
       return true;
     });
-  }, [prompts, q, cat, scope, user]);
+  }, [prompts, q, cat, difficulty, scope, user]);
 
   const [featured, ...rest] = filtered;
 
@@ -168,6 +172,38 @@ function LibraryPage() {
           ))}
         </div>
 
+        {/* Difficulty chips */}
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-1">Level:</span>
+          <button
+            onClick={() => setDifficulty(null)}
+            className={`px-3 py-1 rounded-full border text-xs font-semibold transition-all ${
+              difficulty === null
+                ? "border-primary text-primary bg-primary/10"
+                : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            All levels
+          </button>
+          {DIFFICULTIES.map((d) => {
+            const icon = d === "Beginner" ? "🟢" : d === "Advanced" ? "🔴" : "🟡";
+            return (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={`px-3 py-1 rounded-full border text-xs font-semibold transition-all ${
+                  difficulty === d
+                    ? "border-primary text-primary bg-primary/10"
+                    : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {icon} {d}
+              </button>
+            );
+          })}
+        </div>
+
+
         {/* Beginner onboarding banner */}
         {!isLoading && !error && prompts.length > 0 && (
           <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4">
@@ -181,7 +217,7 @@ function LibraryPage() {
               </p>
             </div>
             <button
-              onClick={() => setCat("Beginner")}
+              onClick={() => { setDifficulty("Beginner"); setCat(null); }}
               className="px-4 py-2 rounded-md gradient-primary text-primary-foreground text-sm font-bold shadow-elegant whitespace-nowrap"
             >
               Show beginner prompts
