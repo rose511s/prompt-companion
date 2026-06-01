@@ -68,6 +68,10 @@ export type PromptValues = {
   framework: string | null;
   tags: string[];
   is_public: boolean;
+  difficulty: "Beginner" | "Intermediate" | "Advanced";
+  sample_input: string | null;
+  sample_output: string | null;
+  why_it_works: string | null;
 };
 
 export function PromptEditor({
