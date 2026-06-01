@@ -37,6 +37,7 @@ function DetailPage() {
     const { data } = await supabase.from("prompts").select("*").eq("id", id).maybeSingle();
     setPrompt(data);
     if (data) {
+      track("prompt.view", { entity_type: "prompt", entity_id: data.id });
       const { data: prof } = await supabase.from("profiles").select("display_name").eq("id", data.user_id).maybeSingle();
       setAuthor(prof?.display_name ?? "Unknown");
     }
@@ -47,8 +48,9 @@ function DetailPage() {
   const placeholders = useMemo(() => prompt ? extractPlaceholders(prompt.content) : [], [prompt]);
   const filled = useMemo(() => prompt ? fillPlaceholders(prompt.content, values) : "", [prompt, values]);
 
-  async function copy(text: string) {
+  async function copy(text: string, kind: "template" | "filled") {
     await navigator.clipboard.writeText(text);
+    if (prompt) track("prompt.copy", { entity_type: "prompt", entity_id: prompt.id, metadata: { kind } });
     toast.success("Copied to clipboard");
   }
 
