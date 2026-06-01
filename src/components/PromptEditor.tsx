@@ -133,6 +133,10 @@ export function PromptEditor({
         framework,
         tags: tags.split(",").map((t) => t.trim()).filter(Boolean),
         is_public: isPublic,
+        difficulty,
+        sample_input: sampleInput.trim() || null,
+        sample_output: sampleOutput.trim() || null,
+        why_it_works: whyItWorks.trim() || null,
       });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Save failed");
