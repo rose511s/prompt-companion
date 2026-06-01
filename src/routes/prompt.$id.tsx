@@ -132,7 +132,7 @@ function DetailPage() {
           <Card className="p-6 shadow-card">
             <div className="flex items-center justify-between mb-3">
               <h2 className="text-sm font-medium text-muted-foreground">Raw template</h2>
-              <Button size="sm" variant="outline" onClick={() => copy(prompt.content)}>
+              <Button size="sm" variant="outline" onClick={() => copy(prompt.content, "template")}>
                 <Copy className="size-3.5 mr-1" /> Copy template
               </Button>
             </div>
