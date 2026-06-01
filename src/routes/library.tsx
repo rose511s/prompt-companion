@@ -217,7 +217,7 @@ function LibraryPage() {
               </p>
             </div>
             <button
-              onClick={() => setCat("Beginner")}
+              onClick={() => { setDifficulty("Beginner"); setCat(null); }}
               className="px-4 py-2 rounded-md gradient-primary text-primary-foreground text-sm font-bold shadow-elegant whitespace-nowrap"
             >
               Show beginner prompts
