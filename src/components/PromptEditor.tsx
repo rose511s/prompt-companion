@@ -217,6 +217,37 @@ export function PromptEditor({
           </div>
         </div>
 
+        <div className="space-y-4 border-t border-border pt-5">
+          <div>
+            <h3 className="text-sm font-semibold">Worked example <span className="text-muted-foreground font-normal">(optional, recommended)</span></h3>
+            <p className="text-xs text-muted-foreground">Help users understand the prompt by showing a realistic input + output.</p>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sample_input">Sample input</Label>
+            <Textarea
+              id="sample_input" value={sampleInput} onChange={(e) => setSampleInput(e.target.value)}
+              placeholder="Example values filled into the variables…"
+              className="font-mono text-xs min-h-24"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="sample_output">Expected output</Label>
+            <Textarea
+              id="sample_output" value={sampleOutput} onChange={(e) => setSampleOutput(e.target.value)}
+              placeholder="What a good AI response looks like…"
+              className="font-mono text-xs min-h-24"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="why">Why this works</Label>
+            <Textarea
+              id="why" value={whyItWorks} onChange={(e) => setWhyItWorks(e.target.value)}
+              placeholder="1–2 sentences on the framework choice and what makes this prompt effective."
+              className="text-sm min-h-20"
+            />
+          </div>
+        </div>
+
         <div className="flex items-center justify-between border-t border-border pt-4">
           <div>
             <Label htmlFor="pub" className="text-base">Visible to team</Label>
