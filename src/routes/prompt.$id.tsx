@@ -12,6 +12,7 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Copy, Star, Trash2, ArrowLeft, Lock, Globe } from "lucide-react";
 import { extractPlaceholders, fillPlaceholders, PLACEHOLDER_REGEX } from "@/lib/prompt-utils";
+import { track } from "@/lib/analytics";
 import { toast } from "sonner";
 
 type Prompt = Database["public"]["Tables"]["prompts"]["Row"];
