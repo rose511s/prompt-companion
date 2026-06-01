@@ -177,6 +177,33 @@ function DetailPage() {
           </div>
         </TabsContent>
       </Tabs>
+
+      {(prompt.why_it_works || prompt.sample_input || prompt.sample_output) && (
+        <div className="mt-6 grid grid-cols-1 lg:grid-cols-2 gap-5">
+          {prompt.why_it_works && (
+            <Card className="p-6 shadow-card lg:col-span-2">
+              <h2 className="text-sm font-semibold mb-2">Why this works</h2>
+              <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{prompt.why_it_works}</p>
+            </Card>
+          )}
+          {prompt.sample_input && (
+            <Card className="p-6 shadow-card">
+              <h2 className="text-sm font-semibold mb-2">Sample input</h2>
+              <pre className="font-mono text-xs whitespace-pre-wrap leading-relaxed bg-muted/40 p-3 rounded-md border border-border max-h-80 overflow-auto">
+                {prompt.sample_input}
+              </pre>
+            </Card>
+          )}
+          {prompt.sample_output && (
+            <Card className="p-6 shadow-card">
+              <h2 className="text-sm font-semibold mb-2">Expected output</h2>
+              <pre className="font-mono text-xs whitespace-pre-wrap leading-relaxed bg-muted/40 p-3 rounded-md border border-border max-h-80 overflow-auto">
+                {prompt.sample_output}
+              </pre>
+            </Card>
+          )}
+        </div>
+      )}
     </div>
   );
 }
