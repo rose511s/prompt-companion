@@ -12,6 +12,8 @@ import { Plus, Search, Star, Sparkles } from "lucide-react";
 import { toast } from "sonner";
 
 type Prompt = Database["public"]["Tables"]["prompts"]["Row"];
+type Difficulty = "Beginner" | "Intermediate" | "Advanced";
+const DIFFICULTIES: Difficulty[] = ["Beginner", "Intermediate", "Advanced"];
 
 export const Route = createFileRoute("/library")({
   head: () => ({
