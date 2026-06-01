@@ -42,6 +42,7 @@ function NewPage() {
               metadata: { title: v.title, category: v.category },
             },
           }).catch(() => {});
+          track("prompt.create", { entity_type: "prompt", entity_id: data.id, metadata: { category: v.category, difficulty: v.difficulty } });
           toast.success("Prompt saved");
           nav({ to: "/prompt/$id", params: { id: data.id } });
         }}
