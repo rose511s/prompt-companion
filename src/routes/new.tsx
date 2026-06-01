@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { useServerFn } from "@tanstack/react-start";
 import { logEvent } from "@/lib/audit.functions";
+import { track } from "@/lib/analytics";
 import { PromptEditor } from "@/components/PromptEditor";
 import { toast } from "sonner";
 
