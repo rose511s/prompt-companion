@@ -90,6 +90,10 @@ export function PromptEditor({
   const [framework, setFramework] = useState(initial?.framework ?? FRAMEWORKS[0]);
   const [tags, setTags] = useState((initial?.tags ?? []).join(", "));
   const [isPublic, setIsPublic] = useState(initial?.is_public ?? true);
+  const [difficulty, setDifficulty] = useState<PromptValues["difficulty"]>(initial?.difficulty ?? "Intermediate");
+  const [sampleInput, setSampleInput] = useState(initial?.sample_input ?? "");
+  const [sampleOutput, setSampleOutput] = useState(initial?.sample_output ?? "");
+  const [whyItWorks, setWhyItWorks] = useState(initial?.why_it_works ?? "");
   const [busy, setBusy] = useState(false);
   const [previewValues, setPreviewValues] = useState<Record<string, string>>({});
 
