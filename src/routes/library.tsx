@@ -172,6 +172,38 @@ function LibraryPage() {
           ))}
         </div>
 
+        {/* Difficulty chips */}
+        <div className="flex flex-wrap gap-2 items-center">
+          <span className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mr-1">Level:</span>
+          <button
+            onClick={() => setDifficulty(null)}
+            className={`px-3 py-1 rounded-full border text-xs font-semibold transition-all ${
+              difficulty === null
+                ? "border-primary text-primary bg-primary/10"
+                : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+            }`}
+          >
+            All levels
+          </button>
+          {DIFFICULTIES.map((d) => {
+            const icon = d === "Beginner" ? "🟢" : d === "Advanced" ? "🔴" : "🟡";
+            return (
+              <button
+                key={d}
+                onClick={() => setDifficulty(d)}
+                className={`px-3 py-1 rounded-full border text-xs font-semibold transition-all ${
+                  difficulty === d
+                    ? "border-primary text-primary bg-primary/10"
+                    : "border-border text-muted-foreground hover:border-foreground hover:text-foreground"
+                }`}
+              >
+                {icon} {d}
+              </button>
+            );
+          })}
+        </div>
+
+
         {/* Beginner onboarding banner */}
         {!isLoading && !error && prompts.length > 0 && (
           <div className="rounded-2xl border border-primary/30 bg-primary/5 p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4">
