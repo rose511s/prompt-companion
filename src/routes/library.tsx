@@ -30,6 +30,7 @@ function LibraryPage() {
   const qc = useQueryClient();
   const [q, setQ] = useState("");
   const [cat, setCat] = useState<string | null>(null);
+  const [difficulty, setDifficulty] = useState<Difficulty | null>(null);
   const [scope, setScope] = useState<"all" | "mine">("all");
 
   const { data, isLoading, error, refetch } = useQuery({
