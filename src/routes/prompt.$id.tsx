@@ -163,7 +163,7 @@ function DetailPage() {
             <Card className="p-6 shadow-card">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-medium">Final prompt</h2>
-                <Button size="sm" onClick={() => copy(filled)} className="gradient-primary text-primary-foreground border-0">
+                <Button size="sm" onClick={() => copy(filled, "filled")} className="gradient-primary text-primary-foreground border-0">
                   <Copy className="size-3.5 mr-1" /> Copy
                 </Button>
               </div>
