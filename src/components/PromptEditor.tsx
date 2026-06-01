@@ -172,9 +172,22 @@ export function PromptEditor({
             </Select>
           </div>
         </div>
-        <div className="space-y-2">
-          <Label htmlFor="tags">Tags (comma-separated)</Label>
-          <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="kubernetes, debugging" />
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label>Difficulty</Label>
+            <Select value={difficulty} onValueChange={(v) => setDifficulty(v as PromptValues["difficulty"])}>
+              <SelectTrigger><SelectValue /></SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Beginner">🟢 Beginner</SelectItem>
+                <SelectItem value="Intermediate">🟡 Intermediate</SelectItem>
+                <SelectItem value="Advanced">🔴 Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="tags">Tags (comma-separated)</Label>
+            <Input id="tags" value={tags} onChange={(e) => setTags(e.target.value)} placeholder="kubernetes, debugging" />
+          </div>
         </div>
         <div className="space-y-2">
           <div className="flex items-center justify-between gap-2 flex-wrap">
