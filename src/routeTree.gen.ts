@@ -16,10 +16,15 @@ import { Route as LibraryRouteImport } from './routes/library'
 import { Route as FavoritesRouteImport } from './routes/favorites'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SettingsApiKeysRouteImport } from './routes/settings.api-keys'
 import { Route as PromptIdRouteImport } from './routes/prompt.$id'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as PromptIdHistoryRouteImport } from './routes/prompt.$id.history'
 import { Route as PromptIdEditRouteImport } from './routes/prompt.$id.edit'
+import { Route as ApiPublicV1PromptsRouteImport } from './routes/api.public.v1.prompts'
+import { Route as ApiPublicV1HealthRouteImport } from './routes/api.public.v1.health'
+import { Route as ApiPublicV1PromptsIdRouteImport } from './routes/api.public.v1.prompts.$id'
+import { Route as ApiPublicV1PromptsIdRenderRouteImport } from './routes/api.public.v1.prompts.$id.render'
 
 const ReadmeRoute = ReadmeRouteImport.update({
   id: '/readme',
@@ -56,6 +61,11 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsApiKeysRoute = SettingsApiKeysRouteImport.update({
+  id: '/settings/api-keys',
+  path: '/settings/api-keys',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PromptIdRoute = PromptIdRouteImport.update({
   id: '/prompt/$id',
   path: '/prompt/$id',
@@ -76,6 +86,27 @@ const PromptIdEditRoute = PromptIdEditRouteImport.update({
   path: '/edit',
   getParentRoute: () => PromptIdRoute,
 } as any)
+const ApiPublicV1PromptsRoute = ApiPublicV1PromptsRouteImport.update({
+  id: '/api/public/v1/prompts',
+  path: '/api/public/v1/prompts',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1HealthRoute = ApiPublicV1HealthRouteImport.update({
+  id: '/api/public/v1/health',
+  path: '/api/public/v1/health',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicV1PromptsIdRoute = ApiPublicV1PromptsIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => ApiPublicV1PromptsRoute,
+} as any)
+const ApiPublicV1PromptsIdRenderRoute =
+  ApiPublicV1PromptsIdRenderRouteImport.update({
+    id: '/render',
+    path: '/render',
+    getParentRoute: () => ApiPublicV1PromptsIdRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -87,8 +118,13 @@ export interface FileRoutesByFullPath {
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
+  '/api/public/v1/health': typeof ApiPublicV1HealthRoute
+  '/api/public/v1/prompts': typeof ApiPublicV1PromptsRouteWithChildren
+  '/api/public/v1/prompts/$id': typeof ApiPublicV1PromptsIdRouteWithChildren
+  '/api/public/v1/prompts/$id/render': typeof ApiPublicV1PromptsIdRenderRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -100,8 +136,13 @@ export interface FileRoutesByTo {
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
+  '/api/public/v1/health': typeof ApiPublicV1HealthRoute
+  '/api/public/v1/prompts': typeof ApiPublicV1PromptsRouteWithChildren
+  '/api/public/v1/prompts/$id': typeof ApiPublicV1PromptsIdRouteWithChildren
+  '/api/public/v1/prompts/$id/render': typeof ApiPublicV1PromptsIdRenderRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -114,8 +155,13 @@ export interface FileRoutesById {
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
+  '/api/public/v1/health': typeof ApiPublicV1HealthRoute
+  '/api/public/v1/prompts': typeof ApiPublicV1PromptsRouteWithChildren
+  '/api/public/v1/prompts/$id': typeof ApiPublicV1PromptsIdRouteWithChildren
+  '/api/public/v1/prompts/$id/render': typeof ApiPublicV1PromptsIdRenderRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,8 +175,13 @@ export interface FileRouteTypes {
     | '/readme'
     | '/admin/audit'
     | '/prompt/$id'
+    | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
+    | '/api/public/v1/health'
+    | '/api/public/v1/prompts'
+    | '/api/public/v1/prompts/$id'
+    | '/api/public/v1/prompts/$id/render'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -142,8 +193,13 @@ export interface FileRouteTypes {
     | '/readme'
     | '/admin/audit'
     | '/prompt/$id'
+    | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
+    | '/api/public/v1/health'
+    | '/api/public/v1/prompts'
+    | '/api/public/v1/prompts/$id'
+    | '/api/public/v1/prompts/$id/render'
   id:
     | '__root__'
     | '/'
@@ -155,8 +211,13 @@ export interface FileRouteTypes {
     | '/readme'
     | '/admin/audit'
     | '/prompt/$id'
+    | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
+    | '/api/public/v1/health'
+    | '/api/public/v1/prompts'
+    | '/api/public/v1/prompts/$id'
+    | '/api/public/v1/prompts/$id/render'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -168,6 +229,9 @@ export interface RootRouteChildren {
   NewRoute: typeof NewRoute
   ReadmeRoute: typeof ReadmeRoute
   PromptIdRoute: typeof PromptIdRouteWithChildren
+  SettingsApiKeysRoute: typeof SettingsApiKeysRoute
+  ApiPublicV1HealthRoute: typeof ApiPublicV1HealthRoute
+  ApiPublicV1PromptsRoute: typeof ApiPublicV1PromptsRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
@@ -221,6 +285,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/api-keys': {
+      id: '/settings/api-keys'
+      path: '/settings/api-keys'
+      fullPath: '/settings/api-keys'
+      preLoaderRoute: typeof SettingsApiKeysRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/prompt/$id': {
       id: '/prompt/$id'
       path: '/prompt/$id'
@@ -249,6 +320,34 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PromptIdEditRouteImport
       parentRoute: typeof PromptIdRoute
     }
+    '/api/public/v1/prompts': {
+      id: '/api/public/v1/prompts'
+      path: '/api/public/v1/prompts'
+      fullPath: '/api/public/v1/prompts'
+      preLoaderRoute: typeof ApiPublicV1PromptsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/health': {
+      id: '/api/public/v1/health'
+      path: '/api/public/v1/health'
+      fullPath: '/api/public/v1/health'
+      preLoaderRoute: typeof ApiPublicV1HealthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/v1/prompts/$id': {
+      id: '/api/public/v1/prompts/$id'
+      path: '/$id'
+      fullPath: '/api/public/v1/prompts/$id'
+      preLoaderRoute: typeof ApiPublicV1PromptsIdRouteImport
+      parentRoute: typeof ApiPublicV1PromptsRoute
+    }
+    '/api/public/v1/prompts/$id/render': {
+      id: '/api/public/v1/prompts/$id/render'
+      path: '/render'
+      fullPath: '/api/public/v1/prompts/$id/render'
+      preLoaderRoute: typeof ApiPublicV1PromptsIdRenderRouteImport
+      parentRoute: typeof ApiPublicV1PromptsIdRoute
+    }
   }
 }
 
@@ -276,6 +375,28 @@ const PromptIdRouteWithChildren = PromptIdRoute._addFileChildren(
   PromptIdRouteChildren,
 )
 
+interface ApiPublicV1PromptsIdRouteChildren {
+  ApiPublicV1PromptsIdRenderRoute: typeof ApiPublicV1PromptsIdRenderRoute
+}
+
+const ApiPublicV1PromptsIdRouteChildren: ApiPublicV1PromptsIdRouteChildren = {
+  ApiPublicV1PromptsIdRenderRoute: ApiPublicV1PromptsIdRenderRoute,
+}
+
+const ApiPublicV1PromptsIdRouteWithChildren =
+  ApiPublicV1PromptsIdRoute._addFileChildren(ApiPublicV1PromptsIdRouteChildren)
+
+interface ApiPublicV1PromptsRouteChildren {
+  ApiPublicV1PromptsIdRoute: typeof ApiPublicV1PromptsIdRouteWithChildren
+}
+
+const ApiPublicV1PromptsRouteChildren: ApiPublicV1PromptsRouteChildren = {
+  ApiPublicV1PromptsIdRoute: ApiPublicV1PromptsIdRouteWithChildren,
+}
+
+const ApiPublicV1PromptsRouteWithChildren =
+  ApiPublicV1PromptsRoute._addFileChildren(ApiPublicV1PromptsRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRouteWithChildren,
@@ -285,7 +406,20 @@ const rootRouteChildren: RootRouteChildren = {
   NewRoute: NewRoute,
   ReadmeRoute: ReadmeRoute,
   PromptIdRoute: PromptIdRouteWithChildren,
+  SettingsApiKeysRoute: SettingsApiKeysRoute,
+  ApiPublicV1HealthRoute: ApiPublicV1HealthRoute,
+  ApiPublicV1PromptsRoute: ApiPublicV1PromptsRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
