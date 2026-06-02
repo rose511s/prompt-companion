@@ -1,126 +1,62 @@
-# Plan: Homepage, UX polish & Phase 1 (Stability)
+This is a big scope (8 themes). I'll deliver it in slices so each ships working end-to-end instead of half-built everywhere. Below is the roadmap, plus a concrete proposal for **Slice 1** to start now.
 
-This is a large scope — I'll break it into 3 phases so you can review/approve. Phase 1 ships first per your request.
+## Roadmap
 
----
+**Slice 1 — Public REST API + API Keys (now)**
+- `api_keys` table (hashed key, label, user_id, last_used_at, revoked_at). RLS: users manage own; service role validates.
+- Settings page `/settings/api-keys`: create / copy-once / revoke keys.
+- Public endpoints under `src/routes/api/public/v1/`:
+  - `GET /api/public/v1/prompts` — list public prompts (filters: `category`, `tag`, `difficulty`, `q`, `limit`, `cursor`).
+  - `GET /api/public/v1/prompts/:id` — single prompt with sample I/O.
+  - `POST /api/public/v1/prompts/:id/render` — fill placeholders, return rendered text.
+- Auth: `Authorization: Bearer lvp_…` validated server-side via SHA-256 lookup. Rate-limited per key (simple per-minute counter in `api_key_usage`).
+- Track usage to `analytics_events` (`api.call`).
 
-## Part A — UX additions
+**Slice 2 — Interactive Playground**
+- `/playground/:id` route: placeholder form on left, live "Run" on right via Lovable AI Gateway (`google/gemini-2.5-flash`).
+- Reuses existing `sendChat` pattern; new `runPrompt` server fn.
+- "Open in playground" CTA on every prompt card.
 
-### A1. Public homepage at `/`
-- Currently `/` redirects into the app. Replace `src/routes/index.tsx` with a public landing page (Editorial Drop style):
-  - Hero ("Prompt Directory — Gold-standard AI prompts for Dev & DevOps")
-  - 3-up "How it works" (Browse → Copy → Ship)
-  - Featured beginner prompts (4 cards, public)
-  - Categories strip
-  - CTA: "Open Library" / "Sign in"
-- Full SEO `head()` with og tags.
+**Slice 3 — Versioning & Changelog**
+- We already snapshot `prompt_versions`. Add `semver` column (`major.minor.patch`) and `stability` (`experimental | stable | deprecated`).
+- Show badge on cards + a `/changelog` route grouped by week.
 
-### A2. Sidebar (already exists in `AppShell`)
-- Keep current sidebar, but add **collapse toggle** + group nav into sections: *Browse* (Library, Favorites, Categories), *Create* (New Prompt), *Help* (README, Chat).
-- Highlight active route (already done) + add small category sub-list.
+**Slice 4 — CLI / SDK**
+- Publishable npm package `prompt-companion` (TypeScript) hitting the public API. Commands: `login`, `list`, `get <id>`, `run <id> --var KEY=VAL`.
+- README install + quick-start. (Lives in a sibling repo; we ship the spec + a `/docs/cli` page here.)
 
-### A3. Beginner-friendly prompts (10 new)
-- Add a new category `beginner` + insert ~10 plain-language prompts ("Explain this error", "Write my first commit message", "Refactor this for readability", etc.) — `is_public=true`.
-- Add an "🟢 Beginner" filter chip on the library page.
+**Slice 5 — Integration Examples + Contribution**
+- `/docs` routes: GitHub Actions snippet, Docker one-liner, IDE prompt snippet.
+- `CONTRIBUTING.md` + `.github/ISSUE_TEMPLATE/new-prompt.yml` + `PULL_REQUEST_TEMPLATE.md` + a GH Action that lints submitted prompt YAML.
+- In-app "Contribute Prompt" form posts to public-pending queue for admin review.
 
-### A4. Loading & error states
-- Add Suspense skeletons to `/library`, `/favorites`, `/prompt/$id` (shimmer cards).
-- Wrap route `errorComponent` with a friendly retry UI (already partly present in `__root.tsx`, extend per-route).
-- Toasts on all mutations (create/update/delete/favorite).
+**Slice 6 — Roles polish + Ops readiness**
+- Roles already exist (`admin`/`editor`/`member`). Add `contributor` and a Contributors admin page.
+- Add Sentry (browser + server fn middleware) behind `SENTRY_DSN` secret; `/api/public/v1/health` endpoint for uptime monitors.
 
-### A5. Persist chat history
-- New table `chat_messages (id, user_id, role, content, created_at)` with RLS (user owns own rows).
-- Update `HelpChat` to load last 50 messages on open, append + persist new messages.
-- "Clear conversation" button.
+## Slice 1 — files to add/change
 
-### A6. Prompt editor (rich)
-- Upgrade `/new` and add `/prompt/$id/edit`:
-  - Monaco-like textarea with framework template inserter (CO-STAR / Few-Shot / CoT scaffolds as buttons).
-  - Live token/char count, tag chips input, category select, public toggle.
-  - Side-by-side preview pane.
-
----
-
-## Part B — **Phase 1: Stability** (ship first)
-
-### B1. RBAC
-Already have `user_roles` + `has_role()`. Add:
-- Enum value `editor` (admin | editor | member).
-- Role gates in UI:
-  - **member** — view public, create own, favorite.
-  - **editor** — edit any public prompt + restore versions.
-  - **admin** — manage roles, delete any, view audit log.
-- New `/admin` route (gated by `has_role(admin)`) — user list + role assignment.
-- Server fn `requireRole(role)` middleware wrapping `requireSupabaseAuth`.
-
-### B2. Prompt versioning & rollback
-New table:
+```text
+supabase/migrations/<ts>_api_keys.sql      # api_keys, api_key_usage, RPC verify_api_key
+src/lib/api-keys.functions.ts              # create / list / revoke (auth'd)
+src/routes/settings.api-keys.tsx           # UI
+src/routes/api/public/v1/prompts.ts        # list
+src/routes/api/public/v1/prompts.$id.ts    # detail
+src/routes/api/public/v1/prompts.$id.render.ts  # render with vars
+src/lib/api-auth.server.ts                 # bearer-token verification + rate limit
 ```
-prompt_versions (
-  id, prompt_id, version_number, title, description,
-  content, category, tags[], framework,
-  edited_by, edited_at, change_note
-)
-```
-- DB trigger on `prompts` UPDATE → snapshot OLD row into `prompt_versions` (auto-increment `version_number` per prompt).
-- New route `/prompt/$id/history` — timeline of versions with diff preview.
-- "Restore this version" button (editor/admin only) → server fn that writes the old content back (which itself creates another version → full audit trail).
 
-### B3. Audit logs
-New table:
-```
-audit_logs (
-  id, actor_id, action, entity_type, entity_id,
-  metadata jsonb, created_at
-)
-```
-- Server fn helper `logAudit({ action, entityType, entityId, metadata })` called from every mutation server fn (create/update/delete prompt, role change, version restore, favorite toggle optional).
-- `/admin/audit` page (admin only) — paginated table, filter by actor/action/entity.
-- RLS: only admins can SELECT.
+Security:
+- Key shown to user **once** at creation; only SHA-256 hash stored.
+- All public endpoints validate signature, scope to `is_public=true` prompts, reject without a valid key.
+- Per-key limit (e.g. 60 req/min) returns `429`.
+- Never returns PII (`user_id` omitted from payloads).
 
----
+## What I need from you
 
-## Technical details
+Pick one:
+1. **Ship Slice 1 now** (REST API + keys + settings UI). ~2 migrations + ~6 files. Biggest unlock for the rest of the roadmap.
+2. **Ship Slice 2 first** (Playground) — flashier, no auth surface to design.
+3. **Ship Slices 1 + 2 together** in one go (larger change, longer turn).
 
-**New files**
-- `src/routes/index.tsx` (rewrite — public landing)
-- `src/routes/_authenticated/admin.tsx`, `admin.audit.tsx`
-- `src/routes/_authenticated/prompt.$id.history.tsx`, `prompt.$id.edit.tsx`
-- `src/components/PromptEditor.tsx`, `LoadingSkeleton.tsx`, `RoleGate.tsx`
-- `src/lib/audit.functions.ts`, `src/lib/versions.functions.ts`, `src/lib/admin.functions.ts`, `src/lib/chat-history.functions.ts`
-- `src/lib/rbac.ts` (role helpers + `requireRole` middleware)
-
-**Edited**
-- `src/components/AppShell.tsx` — collapsible sidebar, grouped nav, role-aware admin link
-- `src/components/HelpChat.tsx` — persisted history
-- `src/lib/chat.functions.ts` — save messages
-- `src/routes/library.tsx`, `favorites.tsx`, `prompt.$id.tsx`, `new.tsx`
-
-**DB migrations** (1 file)
-1. Add `editor` to `app_role` enum
-2. Create `prompt_versions`, `audit_logs`, `chat_messages` + RLS
-3. Snapshot trigger on `prompts`
-4. Helper fn `log_audit()` (SECURITY DEFINER, called from server fns via supabaseAdmin)
-
-**Data inserts** (separate, after migration)
-- 10 beginner prompts
-- New `beginner` is just a `category` text value — no schema change
-
----
-
-## Ship order
-
-1. **Phase 1 first** (B1–B3): migration → server fns → admin UI → versioning UI → audit page.
-2. Then **Part A** (homepage, sidebar polish, beginner prompts, loading states, chat persistence, prompt editor).
-
-## Out of scope (would defer)
-
-- Real-time collaborative editing
-- Prompt comments / reviews
-- Public sharing links for non-auth users
-- Branching versions (only linear history)
-- Diff view beyond side-by-side text (no semantic diff)
-
----
-
-Approve to proceed — I'll start with the Phase 1 migration.
+Default if you just say "go": option **1**.
