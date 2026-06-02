@@ -1,5 +1,5 @@
 import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
-import { Library, Star, Plus, BookOpen, LogOut, Sparkles, Shield } from "lucide-react";
+import { Library, Star, Plus, BookOpen, LogOut, Sparkles, Shield, KeyRound } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
@@ -12,6 +12,7 @@ const nav = [
   { to: "/favorites", label: "Favorites", icon: Star },
   { to: "/new", label: "New Prompt", icon: Plus },
   { to: "/readme", label: "README", icon: BookOpen },
+  { to: "/settings/api-keys", label: "API Keys", icon: KeyRound },
 ] as const;
 
 export function AppShell({ children }: { children: React.ReactNode }) {
