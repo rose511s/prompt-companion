@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Copy, Star, Trash2, ArrowLeft, Lock, Globe } from "lucide-react";
+import { Copy, Star, Trash2, ArrowLeft, Lock, Globe, Play } from "lucide-react";
 import { extractPlaceholders, fillPlaceholders, PLACEHOLDER_REGEX } from "@/lib/prompt-utils";
 import { track } from "@/lib/analytics";
 import { toast } from "sonner";
@@ -109,6 +109,11 @@ function DetailPage() {
           <Button variant="outline" size="icon" onClick={toggleFav}>
             <Star className={`size-4 ${favorite ? "fill-primary text-primary" : ""}`} />
           </Button>
+          <Link to="/playground/$id" params={{ id: prompt.id }}>
+            <Button size="sm" className="gradient-primary text-primary-foreground border-0">
+              <Play className="size-3.5 mr-1" /> Open in Playground
+            </Button>
+          </Link>
           <Link to="/prompt/$id/history" params={{ id: prompt.id }}>
             <Button variant="outline" size="sm">History</Button>
           </Link>

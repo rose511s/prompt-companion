@@ -18,6 +18,8 @@ import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsApiKeysRouteImport } from './routes/settings.api-keys'
 import { Route as PromptIdRouteImport } from './routes/prompt.$id'
+import { Route as PlaygroundIdRouteImport } from './routes/playground.$id'
+import { Route as PlaygroundIdRouteImport } from './routes/playground.$id'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as PromptIdHistoryRouteImport } from './routes/prompt.$id.history'
 import { Route as PromptIdEditRouteImport } from './routes/prompt.$id.edit'
@@ -71,6 +73,16 @@ const PromptIdRoute = PromptIdRouteImport.update({
   path: '/prompt/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PlaygroundIdRoute = PlaygroundIdRouteImport.update({
+  id: '/playground/$id',
+  path: '/playground/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PlaygroundIdRoute = PlaygroundIdRouteImport.update({
+  id: '/playground/$id',
+  path: '/playground/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -117,7 +129,9 @@ export interface FileRoutesByFullPath {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -135,7 +149,9 @@ export interface FileRoutesByTo {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -154,7 +170,9 @@ export interface FileRoutesById {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
+  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -174,7 +192,9 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/playground/$id'
     | '/prompt/$id'
+    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -192,7 +212,9 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/playground/$id'
     | '/prompt/$id'
+    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -210,7 +232,9 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/playground/$id'
     | '/prompt/$id'
+    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -228,7 +252,9 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   NewRoute: typeof NewRoute
   ReadmeRoute: typeof ReadmeRoute
+  PlaygroundIdRoute: typeof PlaygroundIdRoute
   PromptIdRoute: typeof PromptIdRouteWithChildren
+  PlaygroundIdRoute: typeof PlaygroundIdRoute
   SettingsApiKeysRoute: typeof SettingsApiKeysRoute
   ApiPublicV1HealthRoute: typeof ApiPublicV1HealthRoute
   ApiPublicV1PromptsRoute: typeof ApiPublicV1PromptsRouteWithChildren
@@ -297,6 +323,20 @@ declare module '@tanstack/react-router' {
       path: '/prompt/$id'
       fullPath: '/prompt/$id'
       preLoaderRoute: typeof PromptIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground/$id': {
+      id: '/playground/$id'
+      path: '/playground/$id'
+      fullPath: '/playground/$id'
+      preLoaderRoute: typeof PlaygroundIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/playground/$id': {
+      id: '/playground/$id'
+      path: '/playground/$id'
+      fullPath: '/playground/$id'
+      preLoaderRoute: typeof PlaygroundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/audit': {
@@ -405,7 +445,9 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   NewRoute: NewRoute,
   ReadmeRoute: ReadmeRoute,
+  PlaygroundIdRoute: PlaygroundIdRoute,
   PromptIdRoute: PromptIdRouteWithChildren,
+  PlaygroundIdRoute: PlaygroundIdRoute,
   SettingsApiKeysRoute: SettingsApiKeysRoute,
   ApiPublicV1HealthRoute: ApiPublicV1HealthRoute,
   ApiPublicV1PromptsRoute: ApiPublicV1PromptsRouteWithChildren,
@@ -413,13 +455,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
