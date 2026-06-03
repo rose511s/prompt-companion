@@ -62,14 +62,14 @@ function PlaygroundPage() {
     try {
       const result = await run({ data: { prompt: rendered, model } });
       if (!result.ok) {
-        setError(result.error);
+        setError({ message: result.error, retryable: "retryable" in result ? result.retryable : false });
       } else {
         setOutput(result.reply);
         setMeta({ latency_ms: result.latency_ms, tokens: result.usage?.total_tokens ?? null });
         track("prompt.view", { entity_type: "prompt", entity_id: prompt.id, metadata: { source: "playground", model } });
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Failed to run prompt");
+      setError({ message: e instanceof Error ? e.message : "Failed to run prompt", retryable: true });
     } finally {
       setLoading(false);
     }
@@ -204,8 +204,13 @@ function PlaygroundPage() {
           )}
 
           {error ? (
-            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md p-3">
-              {error}
+            <div className="text-sm text-destructive bg-destructive/10 border border-destructive/30 rounded-md p-3 space-y-2">
+              <div>{error.message}</div>
+              {error.retryable && (
+                <Button size="sm" variant="outline" onClick={onRun} disabled={loading}>
+                  <Play className="size-3.5 mr-1" /> Retry
+                </Button>
+              )}
             </div>
           ) : loading ? (
             <div className="space-y-2">
