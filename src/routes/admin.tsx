@@ -8,7 +8,7 @@ import { listUsersWithRoles, setUserRole } from "@/lib/admin.functions";
 import { ErrorBlock, PageSpinner } from "@/components/LoadingSkeleton";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
-import { Shield, FileText } from "lucide-react";
+import { Shield, FileText, AlertTriangle } from "lucide-react";
 
 export const Route = createFileRoute("/admin")({
   head: () => ({ meta: [{ title: "Admin — Prompt Directory" }] }),
@@ -71,12 +71,20 @@ function AdminPage() {
           <h1 className="text-3xl font-bold tracking-tight">Admin</h1>
           <p className="text-muted-foreground">Manage roles and inspect activity.</p>
         </div>
-        <Link
-          to="/admin/audit"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-muted text-sm"
-        >
-          <FileText className="size-4" /> Audit log
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            to="/admin/logs"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-muted text-sm"
+          >
+            <AlertTriangle className="size-4" /> Error logs
+          </Link>
+          <Link
+            to="/admin/audit"
+            className="inline-flex items-center gap-2 px-4 py-2 rounded-md border border-border hover:bg-muted text-sm"
+          >
+            <FileText className="size-4" /> Audit log
+          </Link>
+        </div>
       </div>
 
       {isLoading && <PageSpinner label="Loading users…" />}
