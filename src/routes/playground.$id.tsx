@@ -35,7 +35,7 @@ function PlaygroundPage() {
   const [loading, setLoading] = useState(false);
   const [output, setOutput] = useState<string>("");
   const [meta, setMeta] = useState<{ latency_ms: number; tokens?: number | null } | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const [error, setError] = useState<{ message: string; retryable?: boolean } | null>(null);
 
   useEffect(() => {
     void supabase.from("prompts").select("*").eq("id", id).maybeSingle()
