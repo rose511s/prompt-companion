@@ -19,6 +19,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsApiKeysRouteImport } from './routes/settings.api-keys'
 import { Route as PromptIdRouteImport } from './routes/prompt.$id'
 import { Route as PlaygroundIdRouteImport } from './routes/playground.$id'
+import { Route as AdminLogsRouteImport } from './routes/admin.logs'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as PromptIdHistoryRouteImport } from './routes/prompt.$id.history'
 import { Route as PromptIdEditRouteImport } from './routes/prompt.$id.edit'
@@ -77,6 +78,11 @@ const PlaygroundIdRoute = PlaygroundIdRouteImport.update({
   path: '/playground/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminLogsRoute = AdminLogsRouteImport.update({
+  id: '/logs',
+  path: '/logs',
+  getParentRoute: () => AdminRoute,
+} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -123,6 +129,7 @@ export interface FileRoutesByFullPath {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/logs': typeof AdminLogsRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
   '/settings/api-keys': typeof SettingsApiKeysRoute
@@ -142,6 +149,7 @@ export interface FileRoutesByTo {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/logs': typeof AdminLogsRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
   '/settings/api-keys': typeof SettingsApiKeysRoute
@@ -162,6 +170,7 @@ export interface FileRoutesById {
   '/new': typeof NewRoute
   '/readme': typeof ReadmeRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/logs': typeof AdminLogsRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
   '/settings/api-keys': typeof SettingsApiKeysRoute
@@ -183,6 +192,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/admin/logs'
     | '/playground/$id'
     | '/prompt/$id'
     | '/settings/api-keys'
@@ -202,6 +212,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/admin/logs'
     | '/playground/$id'
     | '/prompt/$id'
     | '/settings/api-keys'
@@ -221,6 +232,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/readme'
     | '/admin/audit'
+    | '/admin/logs'
     | '/playground/$id'
     | '/prompt/$id'
     | '/settings/api-keys'
@@ -319,6 +331,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PlaygroundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/logs': {
+      id: '/admin/logs'
+      path: '/logs'
+      fullPath: '/admin/logs'
+      preLoaderRoute: typeof AdminLogsRouteImport
+      parentRoute: typeof AdminRoute
+    }
     '/admin/audit': {
       id: '/admin/audit'
       path: '/audit'
@@ -373,10 +392,12 @@ declare module '@tanstack/react-router' {
 
 interface AdminRouteChildren {
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminLogsRoute: typeof AdminLogsRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAuditRoute: AdminAuditRoute,
+  AdminLogsRoute: AdminLogsRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
@@ -434,3 +455,13 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
