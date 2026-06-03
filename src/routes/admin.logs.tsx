@@ -92,7 +92,7 @@ function LogsPage() {
                   </td>
                   <td className="px-4 py-3 text-xs max-w-md">
                     <pre className="whitespace-pre-wrap break-all font-mono text-[11px] text-muted-foreground">
-                      {JSON.stringify(l.context, null, 0)}
+                      {l.context}
                     </pre>
                   </td>
                 </tr>

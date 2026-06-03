@@ -26,13 +26,13 @@ export const listErrorLogs = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
 
     return {
-      logs: (rows ?? []) as Array<{
-        id: string;
-        source: string;
-        message: string;
-        context: Record<string, unknown>;
-        user_id: string | null;
-        created_at: string;
-      }>,
+      logs: ((rows ?? []) as Array<Record<string, unknown>>).map((r) => ({
+        id: String(r.id),
+        source: String(r.source),
+        message: String(r.message),
+        context: JSON.stringify(r.context ?? {}),
+        user_id: (r.user_id as string | null) ?? null,
+        created_at: String(r.created_at),
+      })),
     };
   });
