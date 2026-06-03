@@ -19,7 +19,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as SettingsApiKeysRouteImport } from './routes/settings.api-keys'
 import { Route as PromptIdRouteImport } from './routes/prompt.$id'
 import { Route as PlaygroundIdRouteImport } from './routes/playground.$id'
-import { Route as PlaygroundIdRouteImport } from './routes/playground.$id'
 import { Route as AdminAuditRouteImport } from './routes/admin.audit'
 import { Route as PromptIdHistoryRouteImport } from './routes/prompt.$id.history'
 import { Route as PromptIdEditRouteImport } from './routes/prompt.$id.edit'
@@ -78,11 +77,6 @@ const PlaygroundIdRoute = PlaygroundIdRouteImport.update({
   path: '/playground/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const PlaygroundIdRoute = PlaygroundIdRouteImport.update({
-  id: '/playground/$id',
-  path: '/playground/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AdminAuditRoute = AdminAuditRouteImport.update({
   id: '/audit',
   path: '/audit',
@@ -131,7 +125,6 @@ export interface FileRoutesByFullPath {
   '/admin/audit': typeof AdminAuditRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
-  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -151,7 +144,6 @@ export interface FileRoutesByTo {
   '/admin/audit': typeof AdminAuditRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
-  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -172,7 +164,6 @@ export interface FileRoutesById {
   '/admin/audit': typeof AdminAuditRoute
   '/playground/$id': typeof PlaygroundIdRoute
   '/prompt/$id': typeof PromptIdRouteWithChildren
-  '/playground/$id': typeof PlaygroundIdRoute
   '/settings/api-keys': typeof SettingsApiKeysRoute
   '/prompt/$id/edit': typeof PromptIdEditRoute
   '/prompt/$id/history': typeof PromptIdHistoryRoute
@@ -194,7 +185,6 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/playground/$id'
     | '/prompt/$id'
-    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -214,7 +204,6 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/playground/$id'
     | '/prompt/$id'
-    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -234,7 +223,6 @@ export interface FileRouteTypes {
     | '/admin/audit'
     | '/playground/$id'
     | '/prompt/$id'
-    | '/playground/$id'
     | '/settings/api-keys'
     | '/prompt/$id/edit'
     | '/prompt/$id/history'
@@ -254,7 +242,6 @@ export interface RootRouteChildren {
   ReadmeRoute: typeof ReadmeRoute
   PlaygroundIdRoute: typeof PlaygroundIdRoute
   PromptIdRoute: typeof PromptIdRouteWithChildren
-  PlaygroundIdRoute: typeof PlaygroundIdRoute
   SettingsApiKeysRoute: typeof SettingsApiKeysRoute
   ApiPublicV1HealthRoute: typeof ApiPublicV1HealthRoute
   ApiPublicV1PromptsRoute: typeof ApiPublicV1PromptsRouteWithChildren
@@ -323,13 +310,6 @@ declare module '@tanstack/react-router' {
       path: '/prompt/$id'
       fullPath: '/prompt/$id'
       preLoaderRoute: typeof PromptIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/playground/$id': {
-      id: '/playground/$id'
-      path: '/playground/$id'
-      fullPath: '/playground/$id'
-      preLoaderRoute: typeof PlaygroundIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/playground/$id': {
@@ -447,7 +427,6 @@ const rootRouteChildren: RootRouteChildren = {
   ReadmeRoute: ReadmeRoute,
   PlaygroundIdRoute: PlaygroundIdRoute,
   PromptIdRoute: PromptIdRouteWithChildren,
-  PlaygroundIdRoute: PlaygroundIdRoute,
   SettingsApiKeysRoute: SettingsApiKeysRoute,
   ApiPublicV1HealthRoute: ApiPublicV1HealthRoute,
   ApiPublicV1PromptsRoute: ApiPublicV1PromptsRouteWithChildren,
