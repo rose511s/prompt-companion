@@ -6,6 +6,7 @@ import {
   jsonResponse,
   recordUsage,
 } from "@/lib/api-auth.server";
+import { logServerError } from "@/lib/error-log.server";
 
 const ENDPOINT = "/api/public/v1/prompts";
 
