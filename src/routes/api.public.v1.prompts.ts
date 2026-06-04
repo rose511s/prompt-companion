@@ -45,8 +45,9 @@ export const Route = createFileRoute("/api/public/v1/prompts")({
 
         const { data, error, count } = await query;
         if (error) {
+          await logServerError("api.public.prompts.list", error.message, { code: error.code });
           await recordUsage(auth.key.id, ENDPOINT, 500);
-          return errorResponse(500, error.message);
+          return errorResponse(500, "Internal server error");
         }
 
         await recordUsage(auth.key.id, ENDPOINT, 200);
