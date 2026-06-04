@@ -6,6 +6,7 @@ import {
   jsonResponse,
   recordUsage,
 } from "@/lib/api-auth.server";
+import { logServerError } from "@/lib/error-log.server";
 
 const ENDPOINT = "/api/public/v1/prompts/:id";
 
@@ -25,8 +26,9 @@ export const Route = createFileRoute("/api/public/v1/prompts/$id")({
           .eq("is_public", true)
           .maybeSingle();
         if (error) {
+          await logServerError("api.public.prompts.get", error.message, { code: error.code, id: params.id });
           await recordUsage(auth.key.id, ENDPOINT, 500);
-          return errorResponse(500, error.message);
+          return errorResponse(500, "Internal server error");
         }
         if (!data) {
           await recordUsage(auth.key.id, ENDPOINT, 404);

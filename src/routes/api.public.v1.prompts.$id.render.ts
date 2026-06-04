@@ -7,6 +7,7 @@ import {
   jsonResponse,
   recordUsage,
 } from "@/lib/api-auth.server";
+import { logServerError } from "@/lib/error-log.server";
 import { extractPlaceholders, fillPlaceholders } from "@/lib/prompt-utils";
 
 const ENDPOINT = "/api/public/v1/prompts/:id/render";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/api/public/v1/prompts/$id/render")({
         const parsed = BodySchema.safeParse(body);
         if (!parsed.success) {
           await recordUsage(auth.key.id, ENDPOINT, 400);
-          return errorResponse(400, parsed.error.message);
+          return errorResponse(400, "Invalid request body");
         }
 
         const { data, error } = await supabaseAdmin
@@ -44,8 +45,9 @@ export const Route = createFileRoute("/api/public/v1/prompts/$id/render")({
           .eq("is_public", true)
           .maybeSingle();
         if (error) {
+          await logServerError("api.public.prompts.render", error.message, { code: error.code, id: params.id });
           await recordUsage(auth.key.id, ENDPOINT, 500);
-          return errorResponse(500, error.message);
+          return errorResponse(500, "Internal server error");
         }
         if (!data) {
           await recordUsage(auth.key.id, ENDPOINT, 404);
